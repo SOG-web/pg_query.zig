@@ -102,6 +102,8 @@ fn addLibPgQuery(
     defer flags.deinit();
     try flags.append("-std=gnu99");
     try flags.append("-Wno-everything");
+    try flags.append("-U_FORTIFY_SOURCE");
+    try flags.append("-D_FORTIFY_SOURCE=0");
     if (optimize == .Debug) {
         try flags.append("-DUSE_ASSERT_CHECKING");
     }

@@ -31,6 +31,9 @@ pub const SummaryResult = summary_result.SummaryResult;
 pub const truncate = @import("truncate.zig");
 
 pub const c = @cImport({
+    @cUndef("_FORTIFY_SOURCE");
+    @cDefine("_FORTIFY_SOURCE", "0");
+    @cDefine("__USE_FORTIFY_LEVEL", "0");
     @cDefine("__thread", "_Thread_local");
     @cInclude("pg_query.h");
     @cInclude("pg_query_raw.h");
