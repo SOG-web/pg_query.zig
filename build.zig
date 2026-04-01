@@ -65,6 +65,28 @@ pub fn build(b: *std.Build) void {
     test_step.dependOn(&run_module_tests.step);
     test_step.dependOn(&run_external_tests.step);
 
+    const smoke_exe = b.addExecutable(.{
+        .name = "pg_query_smoke",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("smoke.zig"),
+            .target = target,
+            .optimize = optimize,
+            .link_libc = true,
+            .imports = &.{
+                .{ .name = "pg_query", .module = pg_query_mod },
+            },
+        }),
+    });
+    smoke_exe.step.dependOn(&proto_step.step);
+    b.installArtifact(smoke_exe);
+
+    const smoke_step = b.step("smoke", "Build and run the pg_query smoke executable");
+    const run_smoke = b.addRunArtifact(smoke_exe);
+    if (b.args) |args| {
+        run_smoke.addArgs(args);
+    }
+    smoke_step.dependOn(&run_smoke.step);
+
     const gen_proto = b.step("gen-proto", "Generate Zig bindings from pg_query.proto");
     gen_proto.dependOn(&proto_step.step);
 }

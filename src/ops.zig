@@ -30,6 +30,10 @@ const ScannedResult = scan_mod.ScanResult;
 const summary_mod = @import("summary_result.zig");
 const SummaryResult = summary_mod.SummaryResult;
 
+fn sqlPreview(sql: []const u8) []const u8 {
+    const trimmed = std.mem.trim(u8, sql, " \t\r\n\x00");
+    return if (trimmed.len <= 160) trimmed else trimmed[0..160];
+}
 pub fn parse(allocator: Allocator, sql: []const u8) ApiError!Outcome(ParsedResult) {
     return parseOpts(allocator, sql, 0);
 }
@@ -349,6 +353,7 @@ pub fn summary(
     const input = try dupeZ(allocator, sql);
     defer allocator.free(input);
 
+    std.log.info("pg_query summary entry sql=\"{s}\"", .{sqlPreview(sql)});
     const result = c.pg_query_summary(input.ptr, parser_options, truncate_limit);
     defer c.pg_query_free_summary_parse_result(result);
 
