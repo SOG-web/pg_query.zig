@@ -120,11 +120,12 @@ fn collectTopLevelCFiles(
     dir_path: []const u8,
 ) !void {
     const io = b.graph.io;
-    const cwd = std.Io.Dir.cwd();
-    const full_path = try std.fs.path.join(b.allocator, &.{ root, dir_path });
+    const root_relative = try std.fs.path.join(b.allocator, &.{ root, dir_path });
+    defer b.allocator.free(root_relative);
+    const full_path = b.pathFromRoot(root_relative);
     defer b.allocator.free(full_path);
 
-    var dir = try cwd.openDir(io, full_path, .{ .iterate = true });
+    var dir = try std.Io.Dir.cwd().openDir(io, full_path, .{ .iterate = true });
     defer dir.close(io);
 
     var iterator = dir.iterate();
