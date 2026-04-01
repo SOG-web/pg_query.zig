@@ -1,0 +1,25 @@
+b1cc8967af058e4700dc722b2ddb41b024f7e15a		branch 'main' of github.com:SOG-web/libpg_query
+8db3a092cf35bfc665c62835a2d251633a58f065	not-for-merge	branch '10-latest' of github.com:SOG-web/libpg_query
+e7c14fe399c4903223362790c212bcbeb6832864	not-for-merge	branch '13-latest' of github.com:SOG-web/libpg_query
+1577ef7c6c349542149e34ffbfafc244ab942ec6	not-for-merge	branch '14-latest' of github.com:SOG-web/libpg_query
+d51bb2cb92e095c8f42a213c86cc38bbc74cb671	not-for-merge	branch '15-latest' of github.com:SOG-web/libpg_query
+233f7eb111312341a22259e0e01b98d3e5c70fde	not-for-merge	branch '15-latest-update-ci-to-ubuntu-24.04' of github.com:SOG-web/libpg_query
+4337f5a7d7bda1d316c97e012c5cbd14c1582737	not-for-merge	branch '16-latest' of github.com:SOG-web/libpg_query
+24ed2883f2c613d534e0327180304189a93af7bd	not-for-merge	branch '16-latest-update-ci-to-ubuntu-24.04' of github.com:SOG-web/libpg_query
+8e78c33b998c6d68d62c8a06097245ddcbee852a	not-for-merge	branch '17-deparser-formatting' of github.com:SOG-web/libpg_query
+c6e027c6fc02277650ca534cc77c17f7526a33f4	not-for-merge	branch '17-latest' of github.com:SOG-web/libpg_query
+b3b9523c75744bbe1c0ed0d6a0284682b064692c	not-for-merge	branch '18-latest-dev' of github.com:SOG-web/libpg_query
+e641eb7e9f3de7f48d3a911b9591544006dbc3fc	not-for-merge	branch '9.4-latest' of github.com:SOG-web/libpg_query
+7565d2bc35ebc6032fa4c4d619196a8af8943880	not-for-merge	branch '9.5-latest' of github.com:SOG-web/libpg_query
+2d033c497cdacdbccb1bdae127fbcffd27ea51ee	not-for-merge	branch 'add-support-for-normalizing-CALL-syntax' of github.com:SOG-web/libpg_query
+673c360841dcc095bc1fd22d01cd71f7cf836107	not-for-merge	branch 'avoid-json-outfuncs-key-duplication' of github.com:SOG-web/libpg_query
+8b717292a80d6dcf4e7e68de63e80ec0317c304a	not-for-merge	branch 'bump-linux-os-in-ci' of github.com:SOG-web/libpg_query
+dfbc979b0f8fc24464ea2d9fe8a772d2269d2abc	not-for-merge	branch 'bump-linux-os-in-ci-2' of github.com:SOG-web/libpg_query
+8b52691fcd8d4a4c58f9b247e805725cc5bad30d	not-for-merge	branch 'fix-missing-install-file' of github.com:SOG-web/libpg_query
+f1b49e559045f3cba66226997ae3dca99c63ec1c	not-for-merge	branch 'handle-all-tables-in-schema' of github.com:SOG-web/libpg_query
+7c58037d3804310d9c17472275d189c3b3340124	not-for-merge	branch 'improve-summary-truncate-performance' of github.com:SOG-web/libpg_query
+a2f1cde4b44bc159e4330d3a3832339cc5eb45a4	not-for-merge	branch 'levkk-add-parse-raw' of github.com:SOG-web/libpg_query
+3cd9feb9be5b2adfb80361c171d80765289844b4	not-for-merge	branch 'normalize-utility-only' of github.com:SOG-web/libpg_query
+5e8e676c1184d6fac29178c4002be251b3348930	not-for-merge	branch 'parse-all' of github.com:SOG-web/libpg_query
+28b946f15cfb9be44261c96c8ce5f5fa4ac2de6d	not-for-merge	branch 'release-17-6-2-0' of github.com:SOG-web/libpg_query
+dfad834c5fb043e1f0c6b66ec6d552181fcfc984	not-for-merge	branch 'update-to-postgres-17-7' of github.com:SOG-web/libpg_query
