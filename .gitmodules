@@ -1,0 +1,3 @@
+[submodule "libpg_query"]
+	path = libpg_query
+	url = git@github.com:SOG-web/libpg_query.git
