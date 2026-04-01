@@ -92,7 +92,8 @@ fn addLibPgQuery(
     var files = std.array_list.Managed([]const u8).init(b.allocator);
     defer files.deinit();
 
-    try collectCFiles(b, &files, root, "src");
+    try collectTopLevelCFiles(b, &files, root, "src");
+    try collectTopLevelCFiles(b, &files, root, "src/postgres");
     try files.append("vendor/protobuf-c/protobuf-c.c");
     try files.append("vendor/xxhash/xxhash.c");
     try files.append("protobuf/pg_query.pb-c.c");
@@ -112,15 +113,15 @@ fn addLibPgQuery(
     });
 }
 
-fn collectCFiles(
+fn collectTopLevelCFiles(
     b: *std.Build,
     files: *std.array_list.Managed([]const u8),
     root: []const u8,
-    subdir: []const u8,
+    dir_path: []const u8,
 ) !void {
     const io = b.graph.io;
     const cwd = std.Io.Dir.cwd();
-    const full_path = try std.fs.path.join(b.allocator, &.{ root, subdir });
+    const full_path = try std.fs.path.join(b.allocator, &.{ root, dir_path });
     defer b.allocator.free(full_path);
 
     var dir = try cwd.openDir(io, full_path, .{ .iterate = true });
@@ -128,17 +129,9 @@ fn collectCFiles(
 
     var iterator = dir.iterate();
     while (try iterator.next(io)) |entry| {
-        switch (entry.kind) {
-            .directory => {
-                if (std.mem.eql(u8, entry.name, "include")) continue;
-                const next_subdir = try std.fs.path.join(b.allocator, &.{ subdir, entry.name });
-                defer b.allocator.free(next_subdir);
-                try collectCFiles(b, files, root, next_subdir);
-            },
-            .file => if (std.mem.endsWith(u8, entry.name, ".c")) {
-                try files.append(try std.fs.path.join(b.allocator, &.{ subdir, entry.name }));
-            },
-            else => {},
+        if (entry.kind != .file) continue;
+        if (std.mem.endsWith(u8, entry.name, ".c")) {
+            try files.append(try std.fs.path.join(b.allocator, &.{ dir_path, entry.name }));
         }
     }
 }
