@@ -1,0 +1,20 @@
+.{
+    .name = .pg_query,
+    .version = "0.0.0",
+    .fingerprint = 0x9824c4465240e881,
+    .minimum_zig_version = "0.16.0-dev.3028+a85495ca2",
+    .dependencies = .{
+        .protobuf = .{
+            .url = "git+https://github.com/SOG-web/zig-protobuf?ref=zig-master#fc04e2f70e01056b7836205960537a94fe5c8246",
+            .hash = "protobuf-3.0.0-0e82ajGaKAASEV1cBWxNY07GEDbSdRUC6Mj2HTlRa2cD",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "README.md",
+        "src",
+        "tests",
+        "libpg_query",
+    },
+}

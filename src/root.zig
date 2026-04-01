@@ -31,7 +31,7 @@ pub const SummaryResult = summary_result.SummaryResult;
 pub const truncate = @import("truncate.zig");
 
 pub const c = @cImport({
-    @cDefine("__thread", "");
+    @cDefine("__thread", "_Thread_local");
     @cInclude("pg_query.h");
     @cInclude("pg_query_raw.h");
     @cInclude("protobuf/pg_query.pb-c.h");

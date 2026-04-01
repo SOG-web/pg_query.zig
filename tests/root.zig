@@ -8,8 +8,10 @@ test {
     _ = @import("parallel_test.zig");
     _ = @import("parse_plpgsql_test.zig");
     _ = @import("query_test.zig");
+    _ = @import("raw_parse_parity_test.zig");
     _ = @import("raw_acceptance_test.zig");
     _ = @import("raw_test.zig");
+    _ = @import("summary_filter_column_parity_test.zig");
     _ = @import("summary_parity_test.zig");
     _ = @import("summary_test.zig");
     _ = @import("summary_truncate_parity_test.zig");
