@@ -279,12 +279,10 @@ pub const RawScanResult = struct {
 };
 
 pub const RawParseResult = struct {
-    allocator: Allocator,
-    sql: []u8,
-    parser_options: c_int,
+    raw_result: c.PgQueryRawParseResult,
 
     pub fn deinit(self: *RawParseResult) void {
-        self.allocator.free(self.sql);
+        c.pg_query_free_raw_parse_result(self.raw_result);
         self.* = undefined;
     }
 

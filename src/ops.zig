@@ -420,11 +420,8 @@ pub fn parseRawOpts(allocator: Allocator, sql: []const u8, parser_options: c_int
         return .{ .err = try copyQueryError(allocator, .parse, result.@"error") };
     }
 
-    c.pg_query_free_raw_parse_result(result);
     return .{ .ok = .{
-        .allocator = allocator,
-        .sql = try allocator.dupe(u8, sql),
-        .parser_options = parser_options,
+        .raw_result = result,
     } };
 }
 
@@ -442,17 +439,7 @@ pub fn parseViaRawToGeneratedOpts(
                 owned.deinit();
             }
 
-            const input = try dupeZ(allocator, value.sql);
-            defer allocator.free(input);
-
-            const raw_result = c.pg_query_parse_raw_opts(input.ptr, value.parser_options);
-            defer c.pg_query_free_raw_parse_result(raw_result);
-
-            if (raw_result.@"error" != null) {
-                return .{ .err = try copyQueryError(allocator, .parse, raw_result.@"error") };
-            }
-
-            const result = c.pg_query_protobuf_from_raw_parse_result(raw_result);
+            const result = c.pg_query_protobuf_from_raw_parse_result(value.raw_result);
             defer c.pg_query_free_protobuf_parse_result(result);
 
             if (result.@"error" != null) {
@@ -583,32 +570,12 @@ pub fn deparseNodeRef(allocator: Allocator, node: NodeRef) ApiError!Outcome(Owne
 }
 
 pub fn deparseRaw(allocator: Allocator, raw: *const RawParseResult) ApiError!Outcome(OwnedString) {
-    const input = try dupeZ(allocator, raw.sql);
-    defer allocator.free(input);
-
-    const raw_result = c.pg_query_parse_raw_opts(input.ptr, raw.parser_options);
-    defer c.pg_query_free_raw_parse_result(raw_result);
-
-    if (raw_result.@"error" != null) {
-        return .{ .err = try copyQueryError(allocator, .parse, raw_result.@"error") };
-    }
-
-    const result = c.pg_query_deparse_raw(raw_result);
+    const result = c.pg_query_deparse_raw(raw.raw_result);
     return deparseFromCResult(allocator, result);
 }
 
 pub fn fingerprintRaw(allocator: Allocator, raw: *const RawParseResult) ApiError!Outcome(Fingerprint) {
-    const input = try dupeZ(allocator, raw.sql);
-    defer allocator.free(input);
-
-    const raw_result = c.pg_query_parse_raw_opts(input.ptr, raw.parser_options);
-    defer c.pg_query_free_raw_parse_result(raw_result);
-
-    if (raw_result.@"error" != null) {
-        return .{ .err = try copyQueryError(allocator, .parse, raw_result.@"error") };
-    }
-
-    const result = c.pg_query_fingerprint_raw(raw_result);
+    const result = c.pg_query_fingerprint_raw(raw.raw_result);
     return fingerprintFromCResult(allocator, result);
 }
 

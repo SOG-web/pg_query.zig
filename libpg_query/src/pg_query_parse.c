@@ -212,6 +212,11 @@ PgQueryRawParseResult pg_query_parse_raw_opts(const char* input, int parser_opti
 	result.tree = parsetree_and_error.tree;
 	result.context = ctx;
 
+	// Restore the top-level memory context while keeping the raw parse tree
+	// alive inside `ctx`. The caller will eventually free `ctx` via
+	// pg_query_free_raw_parse_result.
+	MemoryContextSwitchTo(TopMemoryContext);
+
 	// Note: We intentionally do NOT exit the memory context here because the tree
 	// is still allocated in it. The caller must call pg_query_free_raw_parse_result
 	// which will exit the memory context.
