@@ -529,3 +529,66 @@ test "router routes mixed batch to primary" {
         .err => return error.UnexpectedRouterError,
     }
 }
+
+test "token classifier identifies plain SELECT as read_only" {
+    const allocator = std.testing.allocator;
+
+    const result = try classifySqlViaTokens(allocator, "SELECT * FROM users WHERE id = 1");
+    try std.testing.expectEqual(TokenClassification.read_only, result);
+}
+
+test "token classifier identifies INSERT as read_write" {
+    const allocator = std.testing.allocator;
+
+    const result = try classifySqlViaTokens(allocator, "INSERT INTO users (id) VALUES (1)");
+    try std.testing.expectEqual(TokenClassification.read_write, result);
+}
+
+test "token classifier identifies UPDATE as read_write" {
+    const allocator = std.testing.allocator;
+
+    const result = try classifySqlViaTokens(allocator, "UPDATE users SET name = 'test'");
+    try std.testing.expectEqual(TokenClassification.read_write, result);
+}
+
+test "token classifier identifies CREATE TABLE as read_write" {
+    const allocator = std.testing.allocator;
+
+    const result = try classifySqlViaTokens(allocator, "CREATE TABLE foo (id int)");
+    try std.testing.expectEqual(TokenClassification.read_write, result);
+}
+
+test "token classifier identifies SELECT FOR UPDATE as read_write" {
+    const allocator = std.testing.allocator;
+
+    const result = try classifySqlViaTokens(allocator, "SELECT * FROM users FOR UPDATE");
+    try std.testing.expectEqual(TokenClassification.read_write, result);
+}
+
+test "token classifier identifies SELECT FOR SHARE as read_write" {
+    const allocator = std.testing.allocator;
+
+    const result = try classifySqlViaTokens(allocator, "SELECT * FROM users FOR SHARE");
+    try std.testing.expectEqual(TokenClassification.read_write, result);
+}
+
+test "token classifier identifies EXPLAIN ANALYZE as read_write" {
+    const allocator = std.testing.allocator;
+
+    const result = try classifySqlViaTokens(allocator, "EXPLAIN ANALYZE SELECT * FROM users");
+    try std.testing.expectEqual(TokenClassification.read_write, result);
+}
+
+test "token classifier identifies BEGIN as read_write" {
+    const allocator = std.testing.allocator;
+
+    const result = try classifySqlViaTokens(allocator, "BEGIN");
+    try std.testing.expectEqual(TokenClassification.read_write, result);
+}
+
+test "token classifier identifies multi-statement with SELECT as read_only" {
+    const allocator = std.testing.allocator;
+
+    const result = try classifySqlViaTokens(allocator, "SELECT 1; SELECT 2");
+    try std.testing.expectEqual(TokenClassification.read_only, result);
+}
