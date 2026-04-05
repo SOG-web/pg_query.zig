@@ -300,7 +300,7 @@ pub fn classifySqlViaTokens(allocator: root.Allocator, sql: []const u8) root.Api
 
     return switch (scan_result) {
         .ok => |value| classifyTokens(value.tokens, sql),
-        .err => |err| return err,
+        .err => error.AnalysisFailed,
     };
 }
 
