@@ -288,6 +288,76 @@ fn classifySelect(stmt: *const root.pb.SelectStmt, flags: *AnalysisFlags) Statem
     return .{ .category = .read };
 }
 
+pub const TokenClassification = enum {
+    read_only,
+    read_write,
+    ambiguous,
+};
+
+pub fn classifySqlViaTokens(allocator: root.Allocator, sql: []const u8) root.ApiError!TokenClassification {
+    var scan_result = try root.ops.scanRaw(allocator, sql);
+    defer scan_result.deinit();
+
+    return classifyTokens(scan_result.tokens, sql);
+}
+
+fn classifyTokens(tokens: []const root.RawScanToken, sql: []const u8) TokenClassification {
+    const Token = root.pb.Token;
+
+    var saw_select = false;
+    var i: usize = 0;
+    while (i < tokens.len) : (i += 1) {
+        const token = tokens[i];
+        const token_type: Token = @enumFromInt(token.token);
+
+        switch (token_type) {
+            .select => saw_select = true,
+            .insert, .update, .delete_p, .truncate, .vacuum, .merge => return .read_write,
+            .create, .alter, .drop, .grant, .revoke => return .read_write,
+            .begin_p, .commit, .rollback, .savepoint => return .read_write,
+            .prepare, .execute, .deallocate => return .read_write,
+            .lock_p => return .read_write,
+            .listen, .notify, .unlisten => return .read_write,
+            .copy => return .read_write,
+            .for => {
+                if (saw_select) {
+                    var j = i + 1;
+                    while (j < tokens.len) : (j += 1) {
+                        const next: Token = @enumFromInt(tokens[j].token);
+                        switch (next) {
+                            .update, .share => return .read_write,
+                            .no, .key => continue,
+                            .ident, .whitespace_p, .sql_comment, .c_comment => continue,
+                            else => break,
+                        }
+                    }
+                }
+            },
+            .into => {
+                if (saw_select) return .read_write;
+            },
+            .explain => {
+                var j = i + 1;
+                while (j < tokens.len) : (j += 1) {
+                    const next: Token = @enumFromInt(tokens[j].token);
+                    switch (next) {
+                        .analyze => return .read_write,
+                        .whitespace_p, .sql_comment, .c_comment => continue,
+                        else => break,
+                    }
+                }
+            },
+            .semicolon => {
+                saw_select = false;
+            },
+            else => {},
+        }
+    }
+
+    if (saw_select) return .read_only;
+    return .ambiguous;
+}
+
 fn classifyExplain(stmt: *const root.pb.ExplainStmt, flags: *AnalysisFlags) StatementAnalysis {
     for (stmt.options.items) |option_node| {
         const option_ref = root.generated_node_ref.toRef(option_node) orelse continue;
