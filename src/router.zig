@@ -302,52 +302,48 @@ pub fn classifySqlViaTokens(allocator: root.Allocator, sql: []const u8) root.Api
 }
 
 fn classifyTokens(tokens: []const root.RawScanToken, sql: []const u8) TokenClassification {
-    const Token = root.pb.Token;
-
+    _ = sql;
     var saw_select = false;
     var i: usize = 0;
     while (i < tokens.len) : (i += 1) {
-        const token = tokens[i];
-        const token_type: Token = @enumFromInt(token.token);
+        const t = tokens[i].token;
 
-        switch (token_type) {
-            .select => saw_select = true,
-            .insert, .update, .delete_p, .truncate, .vacuum, .merge => return .read_write,
-            .create, .alter, .drop, .grant, .revoke => return .read_write,
-            .begin_p, .commit, .rollback, .savepoint => return .read_write,
-            .prepare, .execute, .deallocate => return .read_write,
-            .lock_p => return .read_write,
-            .listen, .notify, .unlisten => return .read_write,
-            .copy => return .read_write,
-            .for => {
+        switch (t) {
+            651 => saw_select = true,
+            473, 726, 382, 711, 729, 525 => return .read_write,
+            356, 288, 397, 440, 633 => return .read_write,
+            308, 341, 636, 643 => return .read_write,
+            598, 413, 373 => return .read_write,
+            517 => return .read_write,
+            511, 551, 723 => return .read_write,
+            354 => return .read_write,
+            428 => {
                 if (saw_select) {
                     var j = i + 1;
                     while (j < tokens.len) : (j += 1) {
-                        const next: Token = @enumFromInt(tokens[j].token);
-                        switch (next) {
-                            .update, .share => return .read_write,
-                            .no, .key => continue,
-                            .ident, .whitespace_p, .sql_comment, .c_comment => continue,
+                        switch (tokens[j].token) {
+                            726, 661 => return .read_write,
+                            549, 483 => continue,
+                            258, 745, 275, 276 => continue,
                             else => break,
                         }
                     }
                 }
             },
-            .into => {
+            479 => {
                 if (saw_select) return .read_write;
             },
-            .explain => {
+            415 => {
                 var j = i + 1;
                 while (j < tokens.len) : (j += 1) {
-                    const next: Token = @enumFromInt(tokens[j].token);
-                    switch (next) {
-                        .analyze => return .read_write,
-                        .whitespace_p, .sql_comment, .c_comment => continue,
+                    switch (tokens[j].token) {
+                        291 => return .read_write,
+                        745, 275, 276 => continue,
                         else => break,
                     }
                 }
             },
-            .semicolon => {
+            59 => {
                 saw_select = false;
             },
             else => {},
