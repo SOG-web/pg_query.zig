@@ -298,7 +298,10 @@ pub fn classifySqlViaTokens(allocator: root.Allocator, sql: []const u8) root.Api
     var scan_result = try root.ops.scanRaw(allocator, sql);
     defer scan_result.deinit();
 
-    return classifyTokens(scan_result.tokens, sql);
+    return switch (scan_result) {
+        .ok => |value| classifyTokens(value.tokens, sql),
+        .err => |err| return err,
+    };
 }
 
 fn classifyTokens(tokens: []const root.RawScanToken, sql: []const u8) TokenClassification {
