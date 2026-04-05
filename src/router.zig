@@ -294,13 +294,13 @@ pub const TokenClassification = enum {
     ambiguous,
 };
 
-pub fn classifySqlViaTokens(allocator: root.Allocator, sql: []const u8) root.ApiError!TokenClassification {
-    var scan_result = try root.ops.scanRaw(allocator, sql);
+pub fn classifySqlViaTokens(allocator: root.Allocator, sql: []const u8) TokenClassification {
+    var scan_result = root.ops.scanRaw(allocator, sql) catch return .ambiguous;
     defer scan_result.deinit();
 
     return switch (scan_result) {
         .ok => |value| classifyTokens(value.tokens, sql),
-        .err => error.AnalysisFailed,
+        .err => .ambiguous,
     };
 }
 
