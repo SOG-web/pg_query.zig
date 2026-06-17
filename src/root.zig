@@ -16,6 +16,8 @@ pub const parsePlpgsql = pg_query.parsePlpgsql;
 pub const isUtilityStmt = pg_query.isUtilityStmt;
 pub const parseProtobuf = pg_query.parseProtobuf;
 pub const scanProtobuf = pg_query.scanProtobuf;
+pub const encodeProtobuf = pg_query.encodeProtobuf;
+pub const encodeProtobufBuf = pg_query.encodeProtobufBuf;
 
 pub const ParseResult = pg_query.ParseResult;
 pub const Error = pg_query.Error;
@@ -166,4 +168,150 @@ test "scan protobuf" {
     var result = try scanProtobuf(std.testing.allocator, "SELECT update AS left FROM between");
     defer result.deinit();
     try std.testing.expect(result.scan_tree.tokens.items.len > 0);
+}
+
+test "encode protobuf round-trip simple select" {
+    var parsed = try parseProtobuf(std.testing.allocator, "SELECT 1");
+    defer parsed.deinit();
+
+    const encoded = try encodeProtobuf(std.testing.allocator, &parsed.parse_tree);
+    defer std.testing.allocator.free(encoded);
+
+    try std.testing.expect(encoded.len > 0);
+
+    var reader: std.Io.Reader = .fixed(encoded);
+    var decoded = try proto.ParseResult.decode(&reader, std.testing.allocator);
+    defer decoded.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(usize, 1), decoded.stmts.items.len);
+    try std.testing.expect(decoded.stmts.items[0].stmt != null);
+}
+
+test "encode protobuf round-trip multi-statement" {
+    var parsed = try parseProtobuf(std.testing.allocator, "SELECT 1; SELECT 2; SELECT 3");
+    defer parsed.deinit();
+
+    const encoded = try encodeProtobuf(std.testing.allocator, &parsed.parse_tree);
+    defer std.testing.allocator.free(encoded);
+
+    var reader: std.Io.Reader = .fixed(encoded);
+    var decoded = try proto.ParseResult.decode(&reader, std.testing.allocator);
+    defer decoded.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(usize, 3), decoded.stmts.items.len);
+}
+
+test "encode protobuf round-trip complex query" {
+    const sql =
+        \\SELECT u.id, u.name, o.total
+        \\FROM users u
+        \\JOIN orders o ON u.id = o.user_id
+        \\WHERE u.active = true
+        \\ORDER BY o.total DESC
+        \\LIMIT 10
+    ;
+    var parsed = try parseProtobuf(std.testing.allocator, sql);
+    defer parsed.deinit();
+
+    const encoded = try encodeProtobuf(std.testing.allocator, &parsed.parse_tree);
+    defer std.testing.allocator.free(encoded);
+
+    var reader: std.Io.Reader = .fixed(encoded);
+    var decoded = try proto.ParseResult.decode(&reader, std.testing.allocator);
+    defer decoded.deinit(std.testing.allocator);
+
+    try std.testing.expect(decoded.stmts.items.len > 0);
+    const stmt = decoded.stmts.items[0];
+    try std.testing.expect(stmt.stmt != null);
+    if (stmt.stmt.?.node) |node| {
+        try std.testing.expect(node == .select_stmt);
+    }
+}
+
+test "encode protobuf round-trip insert" {
+    var parsed = try parseProtobuf(std.testing.allocator, "INSERT INTO users (name, email) VALUES ('alice', 'alice@example.com')");
+    defer parsed.deinit();
+
+    const encoded = try encodeProtobuf(std.testing.allocator, &parsed.parse_tree);
+    defer std.testing.allocator.free(encoded);
+
+    var reader: std.Io.Reader = .fixed(encoded);
+    var decoded = try proto.ParseResult.decode(&reader, std.testing.allocator);
+    defer decoded.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(usize, 1), decoded.stmts.items.len);
+    if (decoded.stmts.items[0].stmt.?.node) |node| {
+        try std.testing.expect(node == .insert_stmt);
+    }
+}
+
+test "encode protobuf round-trip create table" {
+    var parsed = try parseProtobuf(std.testing.allocator, "CREATE TABLE posts (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, body TEXT)");
+    defer parsed.deinit();
+
+    const encoded = try encodeProtobuf(std.testing.allocator, &parsed.parse_tree);
+    defer std.testing.allocator.free(encoded);
+
+    var reader: std.Io.Reader = .fixed(encoded);
+    var decoded = try proto.ParseResult.decode(&reader, std.testing.allocator);
+    defer decoded.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(usize, 1), decoded.stmts.items.len);
+    if (decoded.stmts.items[0].stmt.?.node) |node| {
+        try std.testing.expect(node == .create_stmt);
+    }
+}
+
+test "encode protobuf empty stmts" {
+    var empty = proto.ParseResult{};
+
+    const encoded = try encodeProtobuf(std.testing.allocator, &empty);
+    defer std.testing.allocator.free(encoded);
+
+    var reader: std.Io.Reader = .fixed(encoded);
+    var decoded = try proto.ParseResult.decode(&reader, std.testing.allocator);
+    defer decoded.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(usize, 0), decoded.stmts.items.len);
+}
+
+test "encode protobuf buf round-trip simple select" {
+    var parsed = try parseProtobuf(std.testing.allocator, "SELECT 1");
+    defer parsed.deinit();
+
+    const encoded = try encodeProtobufBuf(std.testing.allocator, &parsed.parse_tree, null);
+    defer std.testing.allocator.free(encoded);
+    try std.testing.expect(encoded.len > 0);
+
+    var reader: std.Io.Reader = .fixed(encoded);
+    var decoded = try proto.ParseResult.decode(&reader, std.testing.allocator);
+    defer decoded.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(usize, 1), decoded.stmts.items.len);
+    try std.testing.expect(decoded.stmts.items[0].stmt != null);
+}
+
+test "encode protobuf buf custom buffer" {
+    var parsed = try parseProtobuf(std.testing.allocator, "SELECT 1");
+    defer parsed.deinit();
+
+    var buf: [4096]u8 = undefined;
+    const encoded = try encodeProtobufBuf(std.testing.allocator, &parsed.parse_tree, &buf);
+    defer std.testing.allocator.free(encoded);
+    try std.testing.expect(encoded.len > 0);
+
+    var reader: std.Io.Reader = .fixed(encoded);
+    var decoded = try proto.ParseResult.decode(&reader, std.testing.allocator);
+    defer decoded.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(usize, 1), decoded.stmts.items.len);
+}
+
+test "encode protobuf buf insufficient space" {
+    var parsed = try parseProtobuf(std.testing.allocator, "SELECT 1");
+    defer parsed.deinit();
+
+    var buf: [2]u8 = undefined;
+    const result = encodeProtobufBuf(std.testing.allocator, &parsed.parse_tree, &buf);
+    try std.testing.expectError(error.WriteFailed, result);
 }

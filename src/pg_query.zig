@@ -24,6 +24,7 @@ pub const Error = error{
     InvalidInput,
     NotEnoughData,
     ReadFailed,
+    WriteFailed,
 };
 
 pub const ParseResult = struct {
@@ -268,4 +269,20 @@ pub fn scanProtobuf(allocator: std.mem.Allocator, sql: []const u8) Error!Protobu
         .scan_tree = decoded,
         .allocator = allocator,
     };
+}
+
+pub fn encodeProtobuf(allocator: std.mem.Allocator, tree: anytype) Error![]u8 {
+    var writer: std.Io.Writer.Allocating = .init(allocator);
+    defer writer.deinit();
+    try tree.encode(&writer.writer, allocator);
+    try writer.writer.flush();
+    return try writer.toOwnedSlice();
+}
+
+pub fn encodeProtobufBuf(allocator: std.mem.Allocator, tree: anytype, buf: ?[]u8) Error![]u8 {
+    var default_buf: [4096]u8 = undefined;
+    var writer: std.Io.Writer = .fixed(buf orelse &default_buf);
+    try tree.encode(&writer, allocator);
+    try writer.flush();
+    return try allocator.dupe(u8, writer.buffered());
 }

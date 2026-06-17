@@ -81,6 +81,27 @@ pub fn main() !void {
 }
 ```
 
+### Query rewriting (encode)
+
+```zig
+const pg_query = @import("pg_query");
+
+pub fn main() !void {
+    // Parse SQL to protobuf AST
+    var result = try pg_query.parseProtobuf(allocator, "SELECT id FROM users WHERE name = 'alice'");
+    defer result.deinit();
+
+    // Modify the AST, then encode back to protobuf bytes
+    const encoded = try pg_query.encodeProtobuf(allocator, &result.parse_tree);
+    defer allocator.free(encoded);
+
+    // Or use a stack buffer to avoid heap allocation during encoding
+    var buf: [4096]u8 = undefined;
+    const encoded2 = try pg_query.encodeProtobufBuf(allocator, &result.parse_tree, &buf);
+    defer allocator.free(encoded2);
+}
+```
+
 ### Available functions
 
 | Function | Returns | Description |
@@ -88,6 +109,8 @@ pub fn main() !void {
 | `parse(alloc, sql)` | `ParseResult` | Parse SQL to JSON string |
 | `parseProtobuf(alloc, sql)` | `ProtobufParseResult` | Parse SQL to typed protobuf AST structs |
 | `scanProtobuf(alloc, sql)` | `ProtobufScanResult` | Tokenize SQL to typed protobuf token structs |
+| `encodeProtobuf(alloc, tree)` | `[]u8` | Encode a protobuf AST back to bytes (heap allocated) |
+| `encodeProtobufBuf(alloc, tree, buf?)` | `[]u8` | Encode a protobuf AST to bytes using a fixed buffer (default 4KB, heap allocates for output copy) |
 | `normalize(alloc, sql)` | `NormalizeResult` | Normalize SQL (replace literals with `$1`, `$2`, ...) |
 | `normalizeUtility(alloc, sql)` | `NormalizeResult` | Normalize including utility statements |
 | `fingerprint(alloc, sql)` | `FingerPrintResult` | Compute query fingerprint hash |
