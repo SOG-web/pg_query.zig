@@ -20,6 +20,10 @@ pub const Error = error{
     ParseError,
     OutOfMemory,
     EmptyInput,
+    EndOfStream,
+    InvalidInput,
+    NotEnoughData,
+    ReadFailed,
 };
 
 pub const ParseResult = struct {
@@ -233,6 +237,35 @@ pub fn parseProtobuf(allocator: std.mem.Allocator, sql: []const u8) Error!Protob
 
     return ProtobufParseResult{
         .parse_tree = parsed,
+        .allocator = allocator,
+    };
+}
+
+pub const ProtobufScanResult = struct {
+    scan_tree: proto.ScanResult,
+    allocator: std.mem.Allocator,
+
+    pub fn deinit(self: *ProtobufScanResult) void {
+        self.scan_tree.deinit(self.allocator);
+    }
+};
+
+pub fn scanProtobuf(allocator: std.mem.Allocator, sql: []const u8) Error!ProtobufScanResult {
+    if (sql.len == 0) return error.EmptyInput;
+
+    var result = c.pg_query_scan(@ptrCast(sql.ptr));
+    defer c.pg_query_free_scan_result(result);
+
+    try checkError(&result);
+
+    const pbuf = result.pbuf;
+    const bytes: []const u8 = @ptrCast(pbuf.data[0..pbuf.len]);
+
+    var reader: std.Io.Reader = .fixed(bytes);
+    const decoded = try proto.ScanResult.decode(&reader, allocator);
+
+    return ProtobufScanResult{
+        .scan_tree = decoded,
         .allocator = allocator,
     };
 }

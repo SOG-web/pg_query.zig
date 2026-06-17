@@ -14,8 +14,9 @@
         "build.zig.zon",
         "src",
         "proto",
-        // For example...
-        //"LICENSE",
-        //"README.md",
+        "scripts",
+        "libs",
+        "LICENSE",
+        "README.md",
     },
 }

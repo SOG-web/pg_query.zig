@@ -3171,8 +3171,8 @@ pub const TableFunc = struct {
     functype: TableFuncType = @enumFromInt(0),
     ns_uris: std.ArrayList(Node) = .empty,
     ns_names: std.ArrayList(Node) = .empty,
-    docexpr: ?Node = null,
-    rowexpr: ?Node = null,
+    docexpr: ?*Node = null,
+    rowexpr: ?*Node = null,
     colnames: std.ArrayList(Node) = .empty,
     coltypes: std.ArrayList(Node) = .empty,
     coltypmods: std.ArrayList(Node) = .empty,
@@ -3182,7 +3182,7 @@ pub const TableFunc = struct {
     colvalexprs: std.ArrayList(Node) = .empty,
     passingvalexprs: std.ArrayList(Node) = .empty,
     notnulls: std.ArrayList(u64) = .empty,
-    plan: ?Node = null,
+    plan: ?*Node = null,
     ordinalitycol: i32 = 0,
     location: i32 = 0,
 
@@ -3346,7 +3346,7 @@ pub const IntoClause = struct {
 };
 
 pub const Var = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     varno: i32 = 0,
     varattno: i32 = 0,
     vartype: u32 = 0,
@@ -3430,7 +3430,7 @@ pub const Var = struct {
 };
 
 pub const Param = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     paramkind: ParamKind = @enumFromInt(0),
     paramid: i32 = 0,
     paramtype: u32 = 0,
@@ -3508,7 +3508,7 @@ pub const Param = struct {
 };
 
 pub const Aggref = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     aggfnoid: u32 = 0,
     aggtype: u32 = 0,
     aggcollid: u32 = 0,
@@ -3518,7 +3518,7 @@ pub const Aggref = struct {
     args: std.ArrayList(Node) = .empty,
     aggorder: std.ArrayList(Node) = .empty,
     aggdistinct: std.ArrayList(Node) = .empty,
-    aggfilter: ?Node = null,
+    aggfilter: ?*Node = null,
     aggstar: bool = false,
     aggvariadic: bool = false,
     aggkind: []const u8 = &.{},
@@ -3610,7 +3610,7 @@ pub const Aggref = struct {
 };
 
 pub const GroupingFunc = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     args: std.ArrayList(Node) = .empty,
     refs: std.ArrayList(Node) = .empty,
     agglevelsup: u32 = 0,
@@ -3684,13 +3684,13 @@ pub const GroupingFunc = struct {
 };
 
 pub const WindowFunc = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     winfnoid: u32 = 0,
     wintype: u32 = 0,
     wincollid: u32 = 0,
     inputcollid: u32 = 0,
     args: std.ArrayList(Node) = .empty,
-    aggfilter: ?Node = null,
+    aggfilter: ?*Node = null,
     run_condition: std.ArrayList(Node) = .empty,
     winref: u32 = 0,
     winstar: bool = false,
@@ -3772,11 +3772,11 @@ pub const WindowFunc = struct {
 };
 
 pub const WindowFuncRunCondition = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     opno: u32 = 0,
     inputcollid: u32 = 0,
     wfunc_left: bool = false,
-    arg: ?Node = null,
+    arg: ?*Node = null,
 
     pub const _desc_table = .{
         .xpr = fd(1, .submessage),
@@ -3846,7 +3846,7 @@ pub const WindowFuncRunCondition = struct {
 };
 
 pub const MergeSupportFunc = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     msftype: u32 = 0,
     msfcollid: u32 = 0,
     location: i32 = 0,
@@ -3918,7 +3918,7 @@ pub const MergeSupportFunc = struct {
 };
 
 pub const SubscriptingRef = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     refcontainertype: u32 = 0,
     refelemtype: u32 = 0,
     refrestype: u32 = 0,
@@ -3926,8 +3926,8 @@ pub const SubscriptingRef = struct {
     refcollid: u32 = 0,
     refupperindexpr: std.ArrayList(Node) = .empty,
     reflowerindexpr: std.ArrayList(Node) = .empty,
-    refexpr: ?Node = null,
-    refassgnexpr: ?Node = null,
+    refexpr: ?*Node = null,
+    refassgnexpr: ?*Node = null,
 
     pub const _desc_table = .{
         .xpr = fd(1, .submessage),
@@ -4002,7 +4002,7 @@ pub const SubscriptingRef = struct {
 };
 
 pub const FuncExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     funcid: u32 = 0,
     funcresulttype: u32 = 0,
     funcretset: bool = false,
@@ -4086,8 +4086,8 @@ pub const FuncExpr = struct {
 };
 
 pub const NamedArgExpr = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     name: []const u8 = &.{},
     argnumber: i32 = 0,
     location: i32 = 0,
@@ -4160,7 +4160,7 @@ pub const NamedArgExpr = struct {
 };
 
 pub const OpExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     opno: u32 = 0,
     opresulttype: u32 = 0,
     opretset: bool = false,
@@ -4240,7 +4240,7 @@ pub const OpExpr = struct {
 };
 
 pub const DistinctExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     opno: u32 = 0,
     opresulttype: u32 = 0,
     opretset: bool = false,
@@ -4320,7 +4320,7 @@ pub const DistinctExpr = struct {
 };
 
 pub const NullIfExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     opno: u32 = 0,
     opresulttype: u32 = 0,
     opretset: bool = false,
@@ -4400,7 +4400,7 @@ pub const NullIfExpr = struct {
 };
 
 pub const ScalarArrayOpExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     opno: u32 = 0,
     use_or: bool = false,
     inputcollid: u32 = 0,
@@ -4476,7 +4476,7 @@ pub const ScalarArrayOpExpr = struct {
 };
 
 pub const BoolExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     boolop: BoolExprType = @enumFromInt(0),
     args: std.ArrayList(Node) = .empty,
     location: i32 = 0,
@@ -4548,12 +4548,12 @@ pub const BoolExpr = struct {
 };
 
 pub const SubLink = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     sub_link_type: SubLinkType = @enumFromInt(0),
     sub_link_id: i32 = 0,
-    testexpr: ?Node = null,
+    testexpr: ?*Node = null,
     oper_name: std.ArrayList(Node) = .empty,
-    subselect: ?Node = null,
+    subselect: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -4626,9 +4626,9 @@ pub const SubLink = struct {
 };
 
 pub const SubPlan = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     sub_link_type: SubLinkType = @enumFromInt(0),
-    testexpr: ?Node = null,
+    testexpr: ?*Node = null,
     param_ids: std.ArrayList(Node) = .empty,
     plan_id: i32 = 0,
     plan_name: []const u8 = &.{},
@@ -4724,7 +4724,7 @@ pub const SubPlan = struct {
 };
 
 pub const AlternativeSubPlan = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     subplans: std.ArrayList(Node) = .empty,
 
     pub const _desc_table = .{
@@ -4792,8 +4792,8 @@ pub const AlternativeSubPlan = struct {
 };
 
 pub const FieldSelect = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     fieldnum: i32 = 0,
     resulttype: u32 = 0,
     resulttypmod: i32 = 0,
@@ -4868,8 +4868,8 @@ pub const FieldSelect = struct {
 };
 
 pub const FieldStore = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     newvals: std.ArrayList(Node) = .empty,
     fieldnums: std.ArrayList(Node) = .empty,
     resulttype: u32 = 0,
@@ -4942,8 +4942,8 @@ pub const FieldStore = struct {
 };
 
 pub const RelabelType = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     resulttype: u32 = 0,
     resulttypmod: i32 = 0,
     resultcollid: u32 = 0,
@@ -5020,8 +5020,8 @@ pub const RelabelType = struct {
 };
 
 pub const CoerceViaIO = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     resulttype: u32 = 0,
     resultcollid: u32 = 0,
     coerceformat: CoercionForm = @enumFromInt(0),
@@ -5096,9 +5096,9 @@ pub const CoerceViaIO = struct {
 };
 
 pub const ArrayCoerceExpr = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
-    elemexpr: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
+    elemexpr: ?*Node = null,
     resulttype: u32 = 0,
     resulttypmod: i32 = 0,
     resultcollid: u32 = 0,
@@ -5176,8 +5176,8 @@ pub const ArrayCoerceExpr = struct {
 };
 
 pub const ConvertRowtypeExpr = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     resulttype: u32 = 0,
     convertformat: CoercionForm = @enumFromInt(0),
     location: i32 = 0,
@@ -5250,8 +5250,8 @@ pub const ConvertRowtypeExpr = struct {
 };
 
 pub const CollateExpr = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     coll_oid: u32 = 0,
     location: i32 = 0,
 
@@ -5322,12 +5322,12 @@ pub const CollateExpr = struct {
 };
 
 pub const CaseExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     casetype: u32 = 0,
     casecollid: u32 = 0,
-    arg: ?Node = null,
+    arg: ?*Node = null,
     args: std.ArrayList(Node) = .empty,
-    defresult: ?Node = null,
+    defresult: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -5400,9 +5400,9 @@ pub const CaseExpr = struct {
 };
 
 pub const CaseWhen = struct {
-    xpr: ?Node = null,
-    expr: ?Node = null,
-    result: ?Node = null,
+    xpr: ?*Node = null,
+    expr: ?*Node = null,
+    result: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -5472,7 +5472,7 @@ pub const CaseWhen = struct {
 };
 
 pub const CaseTestExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     type_id: u32 = 0,
     type_mod: i32 = 0,
     collation: u32 = 0,
@@ -5544,7 +5544,7 @@ pub const CaseTestExpr = struct {
 };
 
 pub const ArrayExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     array_typeid: u32 = 0,
     array_collid: u32 = 0,
     element_typeid: u32 = 0,
@@ -5626,7 +5626,7 @@ pub const ArrayExpr = struct {
 };
 
 pub const RowExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     args: std.ArrayList(Node) = .empty,
     row_typeid: u32 = 0,
     row_format: CoercionForm = @enumFromInt(0),
@@ -5702,7 +5702,7 @@ pub const RowExpr = struct {
 };
 
 pub const RowCompareExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     cmptype: CompareType = @enumFromInt(0),
     opnos: std.ArrayList(Node) = .empty,
     opfamilies: std.ArrayList(Node) = .empty,
@@ -5780,7 +5780,7 @@ pub const RowCompareExpr = struct {
 };
 
 pub const CoalesceExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     coalescetype: u32 = 0,
     coalescecollid: u32 = 0,
     args: std.ArrayList(Node) = .empty,
@@ -5854,7 +5854,7 @@ pub const CoalesceExpr = struct {
 };
 
 pub const MinMaxExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     minmaxtype: u32 = 0,
     minmaxcollid: u32 = 0,
     inputcollid: u32 = 0,
@@ -5932,7 +5932,7 @@ pub const MinMaxExpr = struct {
 };
 
 pub const SQLValueFunction = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     op: SQLValueFunctionOp = @enumFromInt(0),
     type: u32 = 0,
     typmod: i32 = 0,
@@ -6006,7 +6006,7 @@ pub const SQLValueFunction = struct {
 };
 
 pub const XmlExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     op: XmlExprOp = @enumFromInt(0),
     name: []const u8 = &.{},
     named_args: std.ArrayList(Node) = .empty,
@@ -6232,8 +6232,8 @@ pub const JsonReturning = struct {
 };
 
 pub const JsonValueExpr = struct {
-    raw_expr: ?Node = null,
-    formatted_expr: ?Node = null,
+    raw_expr: ?*Node = null,
+    formatted_expr: ?*Node = null,
     format: ?JsonFormat = null,
 
     pub const _desc_table = .{
@@ -6302,11 +6302,11 @@ pub const JsonValueExpr = struct {
 };
 
 pub const JsonConstructorExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     type: JsonConstructorType = @enumFromInt(0),
     args: std.ArrayList(Node) = .empty,
-    func: ?Node = null,
-    coercion: ?Node = null,
+    func: ?*Node = null,
+    coercion: ?*Node = null,
     returning: ?JsonReturning = null,
     absent_on_null: bool = false,
     unique: bool = false,
@@ -6384,7 +6384,7 @@ pub const JsonConstructorExpr = struct {
 };
 
 pub const JsonIsPredicate = struct {
-    expr: ?Node = null,
+    expr: ?*Node = null,
     format: ?JsonFormat = null,
     item_type: JsonValueType = @enumFromInt(0),
     unique_keys: bool = false,
@@ -6459,7 +6459,7 @@ pub const JsonIsPredicate = struct {
 
 pub const JsonBehavior = struct {
     btype: JsonBehaviorType = @enumFromInt(0),
-    expr: ?Node = null,
+    expr: ?*Node = null,
     coerce: bool = false,
     location: i32 = 0,
 
@@ -6530,12 +6530,12 @@ pub const JsonBehavior = struct {
 };
 
 pub const JsonExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     op: JsonExprOp = @enumFromInt(0),
     column_name: []const u8 = &.{},
-    formatted_expr: ?Node = null,
+    formatted_expr: ?*Node = null,
     format: ?JsonFormat = null,
-    path_spec: ?Node = null,
+    path_spec: ?*Node = null,
     returning: ?JsonReturning = null,
     passing_names: std.ArrayList(Node) = .empty,
     passing_values: std.ArrayList(Node) = .empty,
@@ -6694,10 +6694,10 @@ pub const JsonTablePath = struct {
 };
 
 pub const JsonTablePathScan = struct {
-    plan: ?Node = null,
+    plan: ?*Node = null,
     path: ?JsonTablePath = null,
     error_on_error: bool = false,
-    child: ?Node = null,
+    child: ?*Node = null,
     col_min: i32 = 0,
     col_max: i32 = 0,
 
@@ -6770,9 +6770,9 @@ pub const JsonTablePathScan = struct {
 };
 
 pub const JsonTableSiblingJoin = struct {
-    plan: ?Node = null,
-    lplan: ?Node = null,
-    rplan: ?Node = null,
+    plan: ?*Node = null,
+    lplan: ?*Node = null,
+    rplan: ?*Node = null,
 
     pub const _desc_table = .{
         .plan = fd(1, .submessage),
@@ -6840,8 +6840,8 @@ pub const JsonTableSiblingJoin = struct {
 };
 
 pub const NullTest = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     nulltesttype: NullTestType = @enumFromInt(0),
     argisrow: bool = false,
     location: i32 = 0,
@@ -6914,8 +6914,8 @@ pub const NullTest = struct {
 };
 
 pub const BooleanTest = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     booltesttype: BoolTestType = @enumFromInt(0),
     location: i32 = 0,
 
@@ -6989,7 +6989,7 @@ pub const MergeAction = struct {
     match_kind: MergeMatchKind = @enumFromInt(0),
     command_type: CmdType = @enumFromInt(0),
     override: OverridingKind = @enumFromInt(0),
-    qual: ?Node = null,
+    qual: ?*Node = null,
     target_list: std.ArrayList(Node) = .empty,
     update_colnos: std.ArrayList(Node) = .empty,
 
@@ -7062,8 +7062,8 @@ pub const MergeAction = struct {
 };
 
 pub const CoerceToDomain = struct {
-    xpr: ?Node = null,
-    arg: ?Node = null,
+    xpr: ?*Node = null,
+    arg: ?*Node = null,
     resulttype: u32 = 0,
     resulttypmod: i32 = 0,
     resultcollid: u32 = 0,
@@ -7140,7 +7140,7 @@ pub const CoerceToDomain = struct {
 };
 
 pub const CoerceToDomainValue = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     type_id: u32 = 0,
     type_mod: i32 = 0,
     collation: u32 = 0,
@@ -7214,7 +7214,7 @@ pub const CoerceToDomainValue = struct {
 };
 
 pub const SetToDefault = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     type_id: u32 = 0,
     type_mod: i32 = 0,
     collation: u32 = 0,
@@ -7288,7 +7288,7 @@ pub const SetToDefault = struct {
 };
 
 pub const CurrentOfExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     cvarno: u32 = 0,
     cursor_name: []const u8 = &.{},
     cursor_param: i32 = 0,
@@ -7360,7 +7360,7 @@ pub const CurrentOfExpr = struct {
 };
 
 pub const NextValueExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     seqid: u32 = 0,
     type_id: u32 = 0,
 
@@ -7430,8 +7430,8 @@ pub const NextValueExpr = struct {
 };
 
 pub const InferenceElem = struct {
-    xpr: ?Node = null,
-    expr: ?Node = null,
+    xpr: ?*Node = null,
+    expr: ?*Node = null,
     infercollid: u32 = 0,
     inferopclass: u32 = 0,
 
@@ -7502,10 +7502,10 @@ pub const InferenceElem = struct {
 };
 
 pub const ReturningExpr = struct {
-    xpr: ?Node = null,
+    xpr: ?*Node = null,
     retlevelsup: i32 = 0,
     retold: bool = false,
-    retexpr: ?Node = null,
+    retexpr: ?*Node = null,
 
     pub const _desc_table = .{
         .xpr = fd(1, .submessage),
@@ -7574,8 +7574,8 @@ pub const ReturningExpr = struct {
 };
 
 pub const TargetEntry = struct {
-    xpr: ?Node = null,
-    expr: ?Node = null,
+    xpr: ?*Node = null,
+    expr: ?*Node = null,
     resno: i32 = 0,
     resname: []const u8 = &.{},
     ressortgroupref: u32 = 0,
@@ -7722,11 +7722,11 @@ pub const RangeTblRef = struct {
 pub const JoinExpr = struct {
     jointype: JoinType = @enumFromInt(0),
     is_natural: bool = false,
-    larg: ?Node = null,
-    rarg: ?Node = null,
+    larg: ?*Node = null,
+    rarg: ?*Node = null,
     using_clause: std.ArrayList(Node) = .empty,
     join_using_alias: ?Alias = null,
-    quals: ?Node = null,
+    quals: ?*Node = null,
     alias: ?Alias = null,
     rtindex: i32 = 0,
 
@@ -7803,7 +7803,7 @@ pub const JoinExpr = struct {
 
 pub const FromExpr = struct {
     fromlist: std.ArrayList(Node) = .empty,
-    quals: ?Node = null,
+    quals: ?*Node = null,
 
     pub const _desc_table = .{
         .fromlist = fd(1, .{ .repeated = .submessage }),
@@ -7872,10 +7872,10 @@ pub const FromExpr = struct {
 pub const OnConflictExpr = struct {
     action: OnConflictAction = @enumFromInt(0),
     arbiter_elems: std.ArrayList(Node) = .empty,
-    arbiter_where: ?Node = null,
+    arbiter_where: ?*Node = null,
     constraint: u32 = 0,
     on_conflict_set: std.ArrayList(Node) = .empty,
-    on_conflict_where: ?Node = null,
+    on_conflict_where: ?*Node = null,
     excl_rel_index: i32 = 0,
     excl_rel_tlist: std.ArrayList(Node) = .empty,
 
@@ -7953,7 +7953,7 @@ pub const Query = struct {
     command_type: CmdType = @enumFromInt(0),
     query_source: QuerySource = @enumFromInt(0),
     can_set_tag: bool = false,
-    utility_stmt: ?Node = null,
+    utility_stmt: ?*Node = null,
     result_relation: i32 = 0,
     has_aggs: bool = false,
     has_window_funcs: bool = false,
@@ -7972,7 +7972,7 @@ pub const Query = struct {
     jointree: ?FromExpr = null,
     merge_action_list: std.ArrayList(Node) = .empty,
     merge_target_relation: i32 = 0,
-    merge_join_condition: ?Node = null,
+    merge_join_condition: ?*Node = null,
     target_list: std.ArrayList(Node) = .empty,
     override: OverridingKind = @enumFromInt(0),
     on_conflict: ?OnConflictExpr = null,
@@ -7982,15 +7982,15 @@ pub const Query = struct {
     group_clause: std.ArrayList(Node) = .empty,
     group_distinct: bool = false,
     grouping_sets: std.ArrayList(Node) = .empty,
-    having_qual: ?Node = null,
+    having_qual: ?*Node = null,
     window_clause: std.ArrayList(Node) = .empty,
     distinct_clause: std.ArrayList(Node) = .empty,
     sort_clause: std.ArrayList(Node) = .empty,
-    limit_offset: ?Node = null,
-    limit_count: ?Node = null,
+    limit_offset: ?*Node = null,
+    limit_count: ?*Node = null,
     limit_option: LimitOption = @enumFromInt(0),
     row_marks: std.ArrayList(Node) = .empty,
-    set_operations: ?Node = null,
+    set_operations: ?*Node = null,
     constraint_deps: std.ArrayList(Node) = .empty,
     with_check_options: std.ArrayList(Node) = .empty,
     stmt_location: i32 = 0,
@@ -8322,8 +8322,8 @@ pub const ParamRef = struct {
 pub const A_Expr = struct {
     kind: A_Expr_Kind = @enumFromInt(0),
     name: std.ArrayList(Node) = .empty,
-    lexpr: ?Node = null,
-    rexpr: ?Node = null,
+    lexpr: ?*Node = null,
+    rexpr: ?*Node = null,
     rexpr_list_start: i32 = 0,
     rexpr_list_end: i32 = 0,
     location: i32 = 0,
@@ -8398,7 +8398,7 @@ pub const A_Expr = struct {
 };
 
 pub const TypeCast = struct {
-    arg: ?Node = null,
+    arg: ?*Node = null,
     type_name: ?TypeName = null,
     location: i32 = 0,
 
@@ -8468,7 +8468,7 @@ pub const TypeCast = struct {
 };
 
 pub const CollateClause = struct {
-    arg: ?Node = null,
+    arg: ?*Node = null,
     collname: std.ArrayList(Node) = .empty,
     location: i32 = 0,
 
@@ -8611,7 +8611,7 @@ pub const FuncCall = struct {
     funcname: std.ArrayList(Node) = .empty,
     args: std.ArrayList(Node) = .empty,
     agg_order: std.ArrayList(Node) = .empty,
-    agg_filter: ?Node = null,
+    agg_filter: ?*Node = null,
     over: ?WindowDef = null,
     agg_within_group: bool = false,
     agg_star: bool = false,
@@ -8757,8 +8757,8 @@ pub const A_Star = struct {
 
 pub const A_Indices = struct {
     is_slice: bool = false,
-    lidx: ?Node = null,
-    uidx: ?Node = null,
+    lidx: ?*Node = null,
+    uidx: ?*Node = null,
 
     pub const _desc_table = .{
         .is_slice = fd(1, .{ .scalar = .bool }),
@@ -8826,7 +8826,7 @@ pub const A_Indices = struct {
 };
 
 pub const A_Indirection = struct {
-    arg: ?Node = null,
+    arg: ?*Node = null,
     indirection: std.ArrayList(Node) = .empty,
 
     pub const _desc_table = .{
@@ -8968,7 +8968,7 @@ pub const A_ArrayExpr = struct {
 pub const ResTarget = struct {
     name: []const u8 = &.{},
     indirection: std.ArrayList(Node) = .empty,
-    val: ?Node = null,
+    val: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -9038,7 +9038,7 @@ pub const ResTarget = struct {
 };
 
 pub const MultiAssignRef = struct {
-    source: ?Node = null,
+    source: ?*Node = null,
     colno: i32 = 0,
     ncolumns: i32 = 0,
 
@@ -9108,7 +9108,7 @@ pub const MultiAssignRef = struct {
 };
 
 pub const SortBy = struct {
-    node: ?Node = null,
+    node: ?*Node = null,
     sortby_dir: SortByDir = @enumFromInt(0),
     sortby_nulls: SortByNulls = @enumFromInt(0),
     use_op: std.ArrayList(Node) = .empty,
@@ -9187,8 +9187,8 @@ pub const WindowDef = struct {
     partition_clause: std.ArrayList(Node) = .empty,
     order_clause: std.ArrayList(Node) = .empty,
     frame_options: i32 = 0,
-    start_offset: ?Node = null,
-    end_offset: ?Node = null,
+    start_offset: ?*Node = null,
+    end_offset: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -9263,7 +9263,7 @@ pub const WindowDef = struct {
 
 pub const RangeSubselect = struct {
     lateral: bool = false,
-    subquery: ?Node = null,
+    subquery: ?*Node = null,
     alias: ?Alias = null,
 
     pub const _desc_table = .{
@@ -9409,8 +9409,8 @@ pub const RangeFunction = struct {
 
 pub const RangeTableFunc = struct {
     lateral: bool = false,
-    docexpr: ?Node = null,
-    rowexpr: ?Node = null,
+    docexpr: ?*Node = null,
+    rowexpr: ?*Node = null,
     namespaces: std.ArrayList(Node) = .empty,
     columns: std.ArrayList(Node) = .empty,
     alias: ?Alias = null,
@@ -9490,8 +9490,8 @@ pub const RangeTableFuncCol = struct {
     type_name: ?TypeName = null,
     for_ordinality: bool = false,
     is_not_null: bool = false,
-    colexpr: ?Node = null,
-    coldefexpr: ?Node = null,
+    colexpr: ?*Node = null,
+    coldefexpr: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -9564,10 +9564,10 @@ pub const RangeTableFuncCol = struct {
 };
 
 pub const RangeTableSample = struct {
-    relation: ?Node = null,
+    relation: ?*Node = null,
     method: std.ArrayList(Node) = .empty,
     args: std.ArrayList(Node) = .empty,
-    repeatable: ?Node = null,
+    repeatable: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -9647,8 +9647,8 @@ pub const ColumnDef = struct {
     is_from_type: bool = false,
     storage: []const u8 = &.{},
     storage_name: []const u8 = &.{},
-    raw_default: ?Node = null,
-    cooked_default: ?Node = null,
+    raw_default: ?*Node = null,
+    cooked_default: ?*Node = null,
     identity: []const u8 = &.{},
     identity_sequence: ?RangeVar = null,
     generated: []const u8 = &.{},
@@ -9811,7 +9811,7 @@ pub const TableLikeClause = struct {
 
 pub const IndexElem = struct {
     name: []const u8 = &.{},
-    expr: ?Node = null,
+    expr: ?*Node = null,
     indexcolname: []const u8 = &.{},
     collation: std.ArrayList(Node) = .empty,
     opclass: std.ArrayList(Node) = .empty,
@@ -9892,7 +9892,7 @@ pub const IndexElem = struct {
 pub const DefElem = struct {
     defnamespace: []const u8 = &.{},
     defname: []const u8 = &.{},
-    arg: ?Node = null,
+    arg: ?*Node = null,
     defaction: DefElemAction = @enumFromInt(0),
     location: i32 = 0,
 
@@ -10035,7 +10035,7 @@ pub const LockingClause = struct {
 
 pub const XmlSerialize = struct {
     xmloption: XmlOptionType = @enumFromInt(0),
-    expr: ?Node = null,
+    expr: ?*Node = null,
     type_name: ?TypeName = null,
     indent: bool = false,
     location: i32 = 0,
@@ -10109,7 +10109,7 @@ pub const XmlSerialize = struct {
 
 pub const PartitionElem = struct {
     name: []const u8 = &.{},
-    expr: ?Node = null,
+    expr: ?*Node = null,
     collation: std.ArrayList(Node) = .empty,
     opclass: std.ArrayList(Node) = .empty,
     location: i32 = 0,
@@ -10333,7 +10333,7 @@ pub const PartitionBoundSpec = struct {
 
 pub const PartitionRangeDatum = struct {
     kind: PartitionRangeDatumKind = @enumFromInt(0),
-    value: ?Node = null,
+    value: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -10680,7 +10680,7 @@ pub const RTEPermissionInfo = struct {
 };
 
 pub const RangeTblFunction = struct {
-    funcexpr: ?Node = null,
+    funcexpr: ?*Node = null,
     funccolcount: i32 = 0,
     funccolnames: std.ArrayList(Node) = .empty,
     funccoltypes: std.ArrayList(Node) = .empty,
@@ -10760,7 +10760,7 @@ pub const RangeTblFunction = struct {
 pub const TableSampleClause = struct {
     tsmhandler: u32 = 0,
     args: std.ArrayList(Node) = .empty,
-    repeatable: ?Node = null,
+    repeatable: ?*Node = null,
 
     pub const _desc_table = .{
         .tsmhandler = fd(1, .{ .scalar = .uint32 }),
@@ -10831,7 +10831,7 @@ pub const WithCheckOption = struct {
     kind: WCOKind = @enumFromInt(0),
     relname: []const u8 = &.{},
     polname: []const u8 = &.{},
-    qual: ?Node = null,
+    qual: ?*Node = null,
     cascaded: bool = false,
 
     pub const _desc_table = .{
@@ -11053,8 +11053,8 @@ pub const WindowClause = struct {
     partition_clause: std.ArrayList(Node) = .empty,
     order_clause: std.ArrayList(Node) = .empty,
     frame_options: i32 = 0,
-    start_offset: ?Node = null,
-    end_offset: ?Node = null,
+    start_offset: ?*Node = null,
+    end_offset: ?*Node = null,
     start_in_range_func: u32 = 0,
     end_in_range_func: u32 = 0,
     in_range_coll: u32 = 0,
@@ -11283,7 +11283,7 @@ pub const WithClause = struct {
 
 pub const InferClause = struct {
     index_elems: std.ArrayList(Node) = .empty,
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
     conname: []const u8 = &.{},
     location: i32 = 0,
 
@@ -11357,7 +11357,7 @@ pub const OnConflictClause = struct {
     action: OnConflictAction = @enumFromInt(0),
     infer: ?InferClause = null,
     target_list: std.ArrayList(Node) = .empty,
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -11502,8 +11502,8 @@ pub const CTESearchClause = struct {
 pub const CTECycleClause = struct {
     cycle_col_list: std.ArrayList(Node) = .empty,
     cycle_mark_column: []const u8 = &.{},
-    cycle_mark_value: ?Node = null,
-    cycle_mark_default: ?Node = null,
+    cycle_mark_value: ?*Node = null,
+    cycle_mark_default: ?*Node = null,
     cycle_path_column: []const u8 = &.{},
     location: i32 = 0,
     cycle_mark_type: u32 = 0,
@@ -11587,7 +11587,7 @@ pub const CommonTableExpr = struct {
     ctename: []const u8 = &.{},
     aliascolnames: std.ArrayList(Node) = .empty,
     ctematerialized: CTEMaterialize = @enumFromInt(0),
-    ctequery: ?Node = null,
+    ctequery: ?*Node = null,
     search_clause: ?CTESearchClause = null,
     cycle_clause: ?CTECycleClause = null,
     location: i32 = 0,
@@ -11677,7 +11677,7 @@ pub const MergeWhenClause = struct {
     match_kind: MergeMatchKind = @enumFromInt(0),
     command_type: CmdType = @enumFromInt(0),
     override: OverridingKind = @enumFromInt(0),
-    condition: ?Node = null,
+    condition: ?*Node = null,
     target_list: std.ArrayList(Node) = .empty,
     values: std.ArrayList(Node) = .empty,
 
@@ -12097,7 +12097,7 @@ pub const JsonFuncExpr = struct {
     op: JsonExprOp = @enumFromInt(0),
     column_name: []const u8 = &.{},
     context_item: ?JsonValueExpr = null,
-    pathspec: ?Node = null,
+    pathspec: ?*Node = null,
     passing: std.ArrayList(Node) = .empty,
     output: ?JsonOutput = null,
     on_empty: ?JsonBehavior = null,
@@ -12180,7 +12180,7 @@ pub const JsonFuncExpr = struct {
 };
 
 pub const JsonTablePathSpec = struct {
-    string: ?Node = null,
+    string: ?*Node = null,
     name: []const u8 = &.{},
     name_location: i32 = 0,
     location: i32 = 0,
@@ -12418,7 +12418,7 @@ pub const JsonTableColumn = struct {
 };
 
 pub const JsonKeyValue = struct {
-    key: ?Node = null,
+    key: ?*Node = null,
     value: ?JsonValueExpr = null,
 
     pub const _desc_table = .{
@@ -12558,7 +12558,7 @@ pub const JsonParseExpr = struct {
 };
 
 pub const JsonScalarExpr = struct {
-    expr: ?Node = null,
+    expr: ?*Node = null,
     output: ?JsonOutput = null,
     location: i32 = 0,
 
@@ -12844,7 +12844,7 @@ pub const JsonArrayConstructor = struct {
 };
 
 pub const JsonArrayQueryConstructor = struct {
-    query: ?Node = null,
+    query: ?*Node = null,
     output: ?JsonOutput = null,
     format: ?JsonFormat = null,
     absent_on_null: bool = false,
@@ -12919,7 +12919,7 @@ pub const JsonArrayQueryConstructor = struct {
 
 pub const JsonAggConstructor = struct {
     output: ?JsonOutput = null,
-    agg_filter: ?Node = null,
+    agg_filter: ?*Node = null,
     agg_order: std.ArrayList(Node) = .empty,
     over: ?WindowDef = null,
     location: i32 = 0,
@@ -13134,7 +13134,7 @@ pub const JsonArrayAgg = struct {
 };
 
 pub const RawStmt = struct {
-    stmt: ?Node = null,
+    stmt: ?*Node = null,
     stmt_location: i32 = 0,
     stmt_len: i32 = 0,
 
@@ -13206,7 +13206,7 @@ pub const RawStmt = struct {
 pub const InsertStmt = struct {
     relation: ?RangeVar = null,
     cols: std.ArrayList(Node) = .empty,
-    select_stmt: ?Node = null,
+    select_stmt: ?*Node = null,
     on_conflict_clause: ?OnConflictClause = null,
     returning_clause: ?ReturningClause = null,
     with_clause: ?WithClause = null,
@@ -13284,7 +13284,7 @@ pub const InsertStmt = struct {
 pub const DeleteStmt = struct {
     relation: ?RangeVar = null,
     using_clause: std.ArrayList(Node) = .empty,
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
     returning_clause: ?ReturningClause = null,
     with_clause: ?WithClause = null,
 
@@ -13358,7 +13358,7 @@ pub const DeleteStmt = struct {
 pub const UpdateStmt = struct {
     relation: ?RangeVar = null,
     target_list: std.ArrayList(Node) = .empty,
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
     from_clause: std.ArrayList(Node) = .empty,
     returning_clause: ?ReturningClause = null,
     with_clause: ?WithClause = null,
@@ -13433,8 +13433,8 @@ pub const UpdateStmt = struct {
 
 pub const MergeStmt = struct {
     relation: ?RangeVar = null,
-    source_relation: ?Node = null,
-    join_condition: ?Node = null,
+    source_relation: ?*Node = null,
+    join_condition: ?*Node = null,
     merge_when_clauses: std.ArrayList(Node) = .empty,
     returning_clause: ?ReturningClause = null,
     with_clause: ?WithClause = null,
@@ -13512,15 +13512,15 @@ pub const SelectStmt = struct {
     into_clause: ?IntoClause = null,
     target_list: std.ArrayList(Node) = .empty,
     from_clause: std.ArrayList(Node) = .empty,
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
     group_clause: std.ArrayList(Node) = .empty,
     group_distinct: bool = false,
-    having_clause: ?Node = null,
+    having_clause: ?*Node = null,
     window_clause: std.ArrayList(Node) = .empty,
     values_lists: std.ArrayList(Node) = .empty,
     sort_clause: std.ArrayList(Node) = .empty,
-    limit_offset: ?Node = null,
-    limit_count: ?Node = null,
+    limit_offset: ?*Node = null,
+    limit_count: ?*Node = null,
     limit_option: LimitOption = @enumFromInt(0),
     locking_clause: std.ArrayList(Node) = .empty,
     with_clause: ?WithClause = null,
@@ -13614,8 +13614,8 @@ pub const SelectStmt = struct {
 pub const SetOperationStmt = struct {
     op: SetOperation = @enumFromInt(0),
     all: bool = false,
-    larg: ?Node = null,
-    rarg: ?Node = null,
+    larg: ?*Node = null,
+    rarg: ?*Node = null,
     col_types: std.ArrayList(Node) = .empty,
     col_typmods: std.ArrayList(Node) = .empty,
     col_collations: std.ArrayList(Node) = .empty,
@@ -13692,7 +13692,7 @@ pub const SetOperationStmt = struct {
 };
 
 pub const ReturnStmt = struct {
-    returnval: ?Node = null,
+    returnval: ?*Node = null,
 
     pub const _desc_table = .{
         .returnval = fd(1, .submessage),
@@ -13980,7 +13980,7 @@ pub const AlterTableCmd = struct {
     name: []const u8 = &.{},
     num: i32 = 0,
     newowner: ?RoleSpec = null,
-    def: ?Node = null,
+    def: ?*Node = null,
     behavior: DropBehavior = @enumFromInt(0),
     missing_ok: bool = false,
     recurse: bool = false,
@@ -14273,7 +14273,7 @@ pub const AlterDomainStmt = struct {
     subtype: []const u8 = &.{},
     type_name: std.ArrayList(Node) = .empty,
     name: []const u8 = &.{},
-    def: ?Node = null,
+    def: ?*Node = null,
     behavior: DropBehavior = @enumFromInt(0),
     missing_ok: bool = false,
 
@@ -14713,13 +14713,13 @@ pub const AlterDefaultPrivilegesStmt = struct {
 
 pub const CopyStmt = struct {
     relation: ?RangeVar = null,
-    query: ?Node = null,
+    query: ?*Node = null,
     attlist: std.ArrayList(Node) = .empty,
     is_from: bool = false,
     is_program: bool = false,
     filename: []const u8 = &.{},
     options: std.ArrayList(Node) = .empty,
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
 
     pub const _desc_table = .{
         .relation = fd(1, .submessage),
@@ -15032,7 +15032,7 @@ pub const Constraint = struct {
     skip_validation: bool = false,
     initially_valid: bool = false,
     is_no_inherit: bool = false,
-    raw_expr: ?Node = null,
+    raw_expr: ?*Node = null,
     cooked_expr: []const u8 = &.{},
     generated_when: []const u8 = &.{},
     generated_kind: []const u8 = &.{},
@@ -15046,7 +15046,7 @@ pub const Constraint = struct {
     indexspace: []const u8 = &.{},
     reset_default_tblspc: bool = false,
     access_method: []const u8 = &.{},
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
     pktable: ?RangeVar = null,
     fk_attrs: std.ArrayList(Node) = .empty,
     pk_attrs: std.ArrayList(Node) = .empty,
@@ -15583,7 +15583,7 @@ pub const AlterExtensionContentsStmt = struct {
     extname: []const u8 = &.{},
     action: i32 = 0,
     objtype: ObjectType = @enumFromInt(0),
-    object: ?Node = null,
+    object: ?*Node = null,
 
     pub const _desc_table = .{
         .extname = fd(1, .{ .scalar = .string }),
@@ -16303,8 +16303,8 @@ pub const CreatePolicyStmt = struct {
     cmd_name: []const u8 = &.{},
     permissive: bool = false,
     roles: std.ArrayList(Node) = .empty,
-    qual: ?Node = null,
-    with_check: ?Node = null,
+    qual: ?*Node = null,
+    with_check: ?*Node = null,
 
     pub const _desc_table = .{
         .policy_name = fd(1, .{ .scalar = .string }),
@@ -16379,8 +16379,8 @@ pub const AlterPolicyStmt = struct {
     policy_name: []const u8 = &.{},
     table: ?RangeVar = null,
     roles: std.ArrayList(Node) = .empty,
-    qual: ?Node = null,
-    with_check: ?Node = null,
+    qual: ?*Node = null,
+    with_check: ?*Node = null,
 
     pub const _desc_table = .{
         .policy_name = fd(1, .{ .scalar = .string }),
@@ -16530,7 +16530,7 @@ pub const CreateTrigStmt = struct {
     timing: i32 = 0,
     events: i32 = 0,
     columns: std.ArrayList(Node) = .empty,
-    when_clause: ?Node = null,
+    when_clause: ?*Node = null,
     transition_rels: std.ArrayList(Node) = .empty,
     deferrable: bool = false,
     initdeferred: bool = false,
@@ -17841,7 +17841,7 @@ pub const TruncateStmt = struct {
 
 pub const CommentStmt = struct {
     objtype: ObjectType = @enumFromInt(0),
-    object: ?Node = null,
+    object: ?*Node = null,
     comment: []const u8 = &.{},
 
     pub const _desc_table = .{
@@ -17911,7 +17911,7 @@ pub const CommentStmt = struct {
 
 pub const SecLabelStmt = struct {
     objtype: ObjectType = @enumFromInt(0),
-    object: ?Node = null,
+    object: ?*Node = null,
     provider: []const u8 = &.{},
     label: []const u8 = &.{},
 
@@ -17984,7 +17984,7 @@ pub const SecLabelStmt = struct {
 pub const DeclareCursorStmt = struct {
     portalname: []const u8 = &.{},
     options: i32 = 0,
-    query: ?Node = null,
+    query: ?*Node = null,
 
     pub const _desc_table = .{
         .portalname = fd(1, .{ .scalar = .string }),
@@ -18197,7 +18197,7 @@ pub const IndexStmt = struct {
     index_params: std.ArrayList(Node) = .empty,
     index_including_params: std.ArrayList(Node) = .empty,
     options: std.ArrayList(Node) = .empty,
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
     exclude_op_names: std.ArrayList(Node) = .empty,
     idxcomment: []const u8 = &.{},
     index_oid: u32 = 0,
@@ -18383,7 +18383,7 @@ pub const CreateStatsStmt = struct {
 
 pub const StatsElem = struct {
     name: []const u8 = &.{},
-    expr: ?Node = null,
+    expr: ?*Node = null,
 
     pub const _desc_table = .{
         .name = fd(1, .{ .scalar = .string }),
@@ -18451,7 +18451,7 @@ pub const StatsElem = struct {
 
 pub const AlterStatsStmt = struct {
     defnames: std.ArrayList(Node) = .empty,
-    stxstattarget: ?Node = null,
+    stxstattarget: ?*Node = null,
     missing_ok: bool = false,
 
     pub const _desc_table = .{
@@ -18526,7 +18526,7 @@ pub const CreateFunctionStmt = struct {
     parameters: std.ArrayList(Node) = .empty,
     return_type: ?TypeName = null,
     options: std.ArrayList(Node) = .empty,
-    sql_body: ?Node = null,
+    sql_body: ?*Node = null,
 
     pub const _desc_table = .{
         .is_procedure = fd(1, .{ .scalar = .bool }),
@@ -18601,7 +18601,7 @@ pub const FunctionParameter = struct {
     name: []const u8 = &.{},
     arg_type: ?TypeName = null,
     mode: FunctionParameterMode = @enumFromInt(0),
-    defexpr: ?Node = null,
+    defexpr: ?*Node = null,
     location: i32 = 0,
 
     pub const _desc_table = .{
@@ -19019,7 +19019,7 @@ pub const RenameStmt = struct {
     rename_type: ObjectType = @enumFromInt(0),
     relation_type: ObjectType = @enumFromInt(0),
     relation: ?RangeVar = null,
-    object: ?Node = null,
+    object: ?*Node = null,
     subname: []const u8 = &.{},
     newname: []const u8 = &.{},
     behavior: DropBehavior = @enumFromInt(0),
@@ -19098,7 +19098,7 @@ pub const RenameStmt = struct {
 pub const AlterObjectDependsStmt = struct {
     object_type: ObjectType = @enumFromInt(0),
     relation: ?RangeVar = null,
-    object: ?Node = null,
+    object: ?*Node = null,
     extname: ?String = null,
     remove: bool = false,
 
@@ -19172,7 +19172,7 @@ pub const AlterObjectDependsStmt = struct {
 pub const AlterObjectSchemaStmt = struct {
     object_type: ObjectType = @enumFromInt(0),
     relation: ?RangeVar = null,
-    object: ?Node = null,
+    object: ?*Node = null,
     newschema: []const u8 = &.{},
     missing_ok: bool = false,
 
@@ -19246,7 +19246,7 @@ pub const AlterObjectSchemaStmt = struct {
 pub const AlterOwnerStmt = struct {
     object_type: ObjectType = @enumFromInt(0),
     relation: ?RangeVar = null,
-    object: ?Node = null,
+    object: ?*Node = null,
     newowner: ?RoleSpec = null,
 
     pub const _desc_table = .{
@@ -19454,7 +19454,7 @@ pub const AlterTypeStmt = struct {
 pub const RuleStmt = struct {
     relation: ?RangeVar = null,
     rulename: []const u8 = &.{},
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
     event: CmdType = @enumFromInt(0),
     instead: bool = false,
     actions: std.ArrayList(Node) = .empty,
@@ -20088,7 +20088,7 @@ pub const AlterEnumStmt = struct {
 pub const ViewStmt = struct {
     view: ?RangeVar = null,
     aliases: std.ArrayList(Node) = .empty,
-    query: ?Node = null,
+    query: ?*Node = null,
     replace: bool = false,
     options: std.ArrayList(Node) = .empty,
     with_check_option: ViewCheckOption = @enumFromInt(0),
@@ -20844,7 +20844,7 @@ pub const VacuumRelation = struct {
 };
 
 pub const ExplainStmt = struct {
-    query: ?Node = null,
+    query: ?*Node = null,
     options: std.ArrayList(Node) = .empty,
 
     pub const _desc_table = .{
@@ -20912,7 +20912,7 @@ pub const ExplainStmt = struct {
 };
 
 pub const CreateTableAsStmt = struct {
-    query: ?Node = null,
+    query: ?*Node = null,
     into: ?IntoClause = null,
     objtype: ObjectType = @enumFromInt(0),
     is_select_into: bool = false,
@@ -21618,7 +21618,7 @@ pub const CreateTransformStmt = struct {
 pub const PrepareStmt = struct {
     name: []const u8 = &.{},
     argtypes: std.ArrayList(Node) = .empty,
-    query: ?Node = null,
+    query: ?*Node = null,
 
     pub const _desc_table = .{
         .name = fd(1, .{ .scalar = .string }),
@@ -22107,7 +22107,7 @@ pub const AlterTSConfigurationStmt = struct {
 
 pub const PublicationTable = struct {
     relation: ?RangeVar = null,
-    where_clause: ?Node = null,
+    where_clause: ?*Node = null,
     columns: std.ArrayList(Node) = .empty,
 
     pub const _desc_table = .{

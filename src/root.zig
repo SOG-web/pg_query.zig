@@ -3,6 +3,8 @@ const std = @import("std");
 const pg_query = @import("pg_query.zig");
 
 pub const proto = @import("pg_query_proto");
+/// C bindings to libpg_query
+pub const libpg_query = @import("c");
 
 pub const parse = pg_query.parse;
 pub const normalize = pg_query.normalize;
@@ -13,6 +15,7 @@ pub const splitWithParser = pg_query.splitWithParser;
 pub const parsePlpgsql = pg_query.parsePlpgsql;
 pub const isUtilityStmt = pg_query.isUtilityStmt;
 pub const parseProtobuf = pg_query.parseProtobuf;
+pub const scanProtobuf = pg_query.scanProtobuf;
 
 pub const ParseResult = pg_query.ParseResult;
 pub const Error = pg_query.Error;
@@ -20,6 +23,7 @@ pub const FingerPrintResult = pg_query.FingerPrintResult;
 pub const NormalizeResult = pg_query.NormalizeResult;
 pub const SplitResult = pg_query.SplitResult;
 pub const ProtobufParseResult = pg_query.ProtobufParseResult;
+pub const ProtobufScanResult = pg_query.ProtobufScanResult;
 
 test "parse" {
     var result = try parse(std.testing.allocator, "SELECT 1");
@@ -156,4 +160,10 @@ test "parse protobuf" {
     var result = try parseProtobuf(std.testing.allocator, "SELECT 1");
     defer result.deinit();
     try std.testing.expect(result.parse_tree.stmts.items.len > 0);
+}
+
+test "scan protobuf" {
+    var result = try scanProtobuf(std.testing.allocator, "SELECT update AS left FROM between");
+    defer result.deinit();
+    try std.testing.expect(result.scan_tree.tokens.items.len > 0);
 }

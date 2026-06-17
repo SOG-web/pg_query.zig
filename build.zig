@@ -90,6 +90,14 @@ pub fn build(b: *std.Build) void {
 
     gen_proto.dependOn(&protoc_step.step);
 
+    // The generated protobuf code contains recursive types (Node → node_union → * → Node)
+    // where ~190 fields use `?Node` (value type), causing infinite size recursion.
+    // This patch rewrites them to `?*Node` (pointer type) which breaks the cycle.
+    // The zig-protobuf library already supports ?*MessageType at decode/encode/deinit.
+    const patch_step = b.addSystemCommand(&.{ "sed", "-i", "s/: ?Node = null,/: ?*Node = null,/g", "src/proto_gen/pg_query.pb.zig" });
+    patch_step.step.dependOn(&protoc_step.step);
+    gen_proto.dependOn(&patch_step.step);
+
     const mod_tests = b.addTest(.{
         .root_module = mod,
     });

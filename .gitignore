@@ -6,3 +6,4 @@ zig-pkg/
 **/zig-pkg
 **/zig-out
 **/.zig-cache
+zig-protobuf
