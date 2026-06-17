@@ -39,6 +39,10 @@ pub fn build(b: *std.Build) void {
     });
     mod.addImport("pg_query_proto", proto_gen_mod);
 
+    const wf = b.addNamedWriteFiles("libs");
+    _ = wf.addCopyFile(b.path("libs/libpg_query.a"), "libpg_query.a");
+    _ = wf.addCopyFile(b.path("libs/pg_query.h"), "pg_query.h");
+
     const exe = b.addExecutable(.{
         .name = "pg_query",
         .root_module = b.createModule(.{

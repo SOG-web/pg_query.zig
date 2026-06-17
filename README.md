@@ -8,6 +8,24 @@ Currently wraps **libpg_query 18.4** (PostgreSQL 18).
 
 - [Zig](https://ziglang.org/) 0.16.0+
 
+## Installation
+
+```sh
+zig fetch --save "git+https://github.com/SOG-web/pg_query.zig#master"
+```
+
+Then add the dependency to your `build.zig`:
+
+```zig
+const pg_query_dep = b.dependency("pg_query", .{
+    .target = target,
+    .optimize = optimize,
+});
+
+exe.root_module.addImport("pg_query", pg_query_dep.module("pg_query"));
+exe.root_module.addObjectFile(pg_query_dep.namedWriteFiles("libs").getDirectory().path("libpg_query.a"));
+```
+
 ## Building
 
 ```sh
