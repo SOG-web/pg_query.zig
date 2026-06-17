@@ -1,0 +1,8 @@
+.zig-cache/
+zig-out/
+libpg_query/
+zig-pkg/
+
+**/zig-pkg
+**/zig-out
+**/.zig-cache

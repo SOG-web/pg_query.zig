@@ -1,0 +1,21 @@
+.{
+    .name = .pg_query,
+    .version = "0.0.1",
+    .fingerprint = 0x9824c4462a88e879, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.16.0",
+    .dependencies = .{
+        .protobuf = .{
+            .url = "git+https://github.com/Arwalk/zig-protobuf?ref=master#00dfee67c1c0db5e198d82e69872c3d567bfb000",
+            .hash = "protobuf-5.0.0-0e82ak_pKQBMwoVhy7bXtHLn-tTuzru8Gd37bJaLBsRd",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "proto",
+        // For example...
+        //"LICENSE",
+        //"README.md",
+    },
+}
